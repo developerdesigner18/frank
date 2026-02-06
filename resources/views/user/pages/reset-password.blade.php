@@ -1,0 +1,274 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Reset Password | Mystery Visitor </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @include('user.layouts.header-links')
+</head>
+
+<body>
+
+<div class="flex min-h-dvh h-full p-4 md:p-6">
+    <div class="flex justify-center items-center w-full ">
+        <div class="w-full max-w-md">
+            <div class="bg-white shadow-lg rounded-2xl p-4 md:p-8">
+                <div class="flex flex-col items-center pb-4">
+                    <img alt="CheckMyZaak logo" class=" h-10 sm:h-12 w-auto" src="{{asset('assets/logo/logo.png')}}">
+                    <h1 class="text-xl sm:text-2xl font-semibold pt-3 text-gray-600">Create new password</h1>
+                    <p class=" text-xs sm:text-sm text-center text-gray-500 pt-1">Your new password must be different from previous used password</p>
+                </div>
+                <form class="flex flex-col gap-6" id="resetForm">
+                    @csrf
+                    <input type="hidden" name="token" value="{{$token}}">
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700" for="email">Password</label>
+                        <div class="position-relative auth-pass-inputgroup">
+                            <input type="password"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                   id="password" name="password" placeholder="Enter password" >
+                            <label id="password-error" class="text-red-600 text-sm" for="password" style="display: none"></label>
+{{--                            <button--}}
+{{--                                    class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon material-shadow-none"--}}
+{{--                                    type="button" id="password-addon">--}}
+{{--                                <i class="ri-eye-fill align-middle"></i>--}}
+{{--                            </button>--}}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700" for="email">Confirm Password</label>
+                        <div class="position-relative auth-pass-inputgroup">
+                            <input type="password"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                   id="password_confirmation" name="password_confirmation" placeholder="Enter password" >
+                            <label id="password_confirmation-error" class="text-red-600 text-sm" for="password_confirmation" style="display: none"></label>
+{{--                            <button--}}
+{{--                                    class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon material-shadow-none"--}}
+{{--                                    type="button" id="confirm-password-input">--}}
+{{--                                <i class="ri-eye-fill align-middle"></i>--}}
+{{--                            </button>--}}
+                        </div>
+                    </div>
+                    <div>
+                    {{--
+                    <button
+                                                    class="cursor-pointer w-full py-2.5 text-xs sm:text-sm rounded-md btn-primary transition-all duration-300"
+                                                    type="submit" id="loginButton">
+                                                Send Password Reset link
+                                            </button>
+                    --}}
+                              <div class="mt-4">
+                                                                <button class="cursor-pointer w-full py-2.5 text-xs sm:text-sm rounded-md btn-primary transition-all duration-300" id="resetButton"><i
+                                                                        class="bx bx-loader spinner me-2"
+                                                                        style="display:none;" id="resetBtnSpinner"></i> Reset Password
+                                                                </button>
+                                                            </div>
+                    </div>
+                </form>
+                <p class="pt-6 text-center text-xs sm:text-sm text-gray-500">
+                    Wait, I remember my password...
+                    <a class="font-semibold text-[#0073AF] hover:!underline" href="{{route('admin.login')}}">
+                        Sign In
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{--<div class="auth-page-wrapper pt-5 mt-5">
+        <div class="auth-page-content">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center mt-sm-5 mb-4 text-white-50">
+                        <div>
+                            <a href="#" class="d-inline-block auth-logo">
+                                <img src="{{asset('assets/logo/logo.png')}}" alt="" height="100">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6 col-xl-5">
+                    <div class="card mt-4 card-bg-fill">
+
+                        <div class="card-body p-4">
+                            <div class="text-center mt-2">
+                                <h5 class="text-primary">Create new password</h5>
+                                <p class="text-muted">Your new password must be different from previous used
+                                    password.</p>
+                            </div>
+
+                            <div class="p-2">
+                                <form id="resetForm" method="post">
+                                    @csrf
+                                    <input type="hidden" name="token" value="{{$token}}">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="password-input">Password</label>
+                                        <div class="position-relative auth-pass-inputgroup">
+                                            <input type="password" name="password"
+                                                   class="form-control pe-5 password-input"
+                                                   onpaste="return false" placeholder="Enter password"
+                                                   id="password-input" aria-describedby="passwordInput"
+                                            >
+                                            <label id="password-error" class="text-red-600 text-sm" for="password"
+                                                   style="display: none"></label>
+                                            <button
+                                                class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon material-shadow-none"
+                                                type="button" id="password-addon"><i
+                                                    class="ri-eye-fill align-middle"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label" for="confirm-password-input">Confirm Password</label>
+                                        <div class="position-relative auth-pass-inputgroup mb-3">
+                                            <input type="password" name="password_confirmation"
+                                                   class="form-control pe-5 password-input"
+                                                   onpaste="return false" placeholder="Confirm password"
+                                                   id="password_confirmation-input">
+                                            <label id="password_confirmation-error" class="text-danger error"
+                                                   for="password"
+                                                   style="display: none"></label>
+                                            <button
+                                                class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon material-shadow-none"
+                                                type="button" id="confirm-password-input"><i
+                                                    class="ri-eye-fill align-middle"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <div id="password-contain" class="p-3 bg-light mb-2 rounded">
+                                        <h5 class="fs-13">Password must contain:</h5>
+                                        <p id="pass-length" class="invalid fs-12 mb-2">Minimum <b>8 characters</b></p>
+                                        <p id="pass-lower" class="invalid fs-12 mb-2">At <b>lowercase</b> letter (a-z)
+                                        </p>
+                                        <p id="pass-upper" class="invalid fs-12 mb-2">At least <b>uppercase</b> letter
+                                            (A-Z)</p>
+                                        <p id="pass-number" class="invalid fs-12 mb-0">A least <b>number</b> (0-9)</p>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <button class="btn btn-success w-100" type="submit" id="resetButton"><i
+                                                class="bx bx-loader spinner me-2"
+                                                style=" " id="resetBtnSpinner"></i> Reset Password
+                                        </button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                        <!-- end card body -->
+                    </div>
+                    <!-- end card -->
+
+                    <div class="mt-4 text-center">
+                        <p class="mb-0">Wait, I remember my password... <a href="{{route('admin.login')}}"
+                                                                           class="fw-semibold text-primary text-decoration-underline">
+                                Click here </a></p>
+                    </div>
+
+                </div>
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+    </div>
+    <!-- end auth page content -->
+
+    <!-- footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center">
+                        <p class="mb-0 text-muted">&copy;
+                            <script>document.write(new Date().getFullYear())</script> {{env('APP_NAME')}}. Crafted with
+                            <i class="mdi mdi-heart text-danger"></i> by TshrXD
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- end Footer -->
+</div>--}}
+<!-- end auth-page-wrapper -->
+
+@include('user.layouts.footer-links')
+@include('user.layouts.common-js')
+<script !src="">
+$(document).ready(function () {
+        $("#resetForm").validate({
+            rules: {
+                 password: {
+                     required: true,
+               },
+                 password_confirmation: {
+                    required: true,
+                    equalTo: "#password"
+                },
+            },
+            messages: {
+                password: {
+                     required: "The password field is required.",
+                },
+                password_confirmation: {
+                     required: "The Confirm password field is required.",
+                      equalTo: "The Confirm password must match with password."
+                }
+            },
+            errorPlacement: function (error, element) {
+                element.after(error);
+            },
+            errorClass: "text-red-600 text-sm",
+            submitHandler: function (form, e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{{route('reset.password.post')}}",
+                    method: "post",
+                    dataType: "json",
+                    data: new FormData(form),
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                  beforeSend: function () {
+                      $('#resetButton').attr('disabled', true);
+                      $("#resetBtnSpinner").show();
+                  },
+                    success: function (result) {
+                        sendSuccess(result.message);
+                        setTimeout(function () {
+                            window.location.href = "{{route('login')}}";
+                        }, 1000);
+                    },
+                    error: function (xhr) {
+                        let data = xhr.responseJSON;
+                        if (data.hasOwnProperty('error')) {
+                            if (data.error.hasOwnProperty('password')) {
+            $("#password-error").html(data.error.password.join('<br>')).show();
+                            }
+                             if (data.error.hasOwnProperty('password_confirmation')) {
+            $("#password_confirmation-error").html(data.error.password_confirmation.join('<br>')).show();
+                             }
+                        } else if (data.hasOwnProperty('message')) {
+                            actionError(xhr, data.message)
+                        } else {
+                            actionError(xhr);
+                        }
+                    },
+                    complete: function () {
+                        $('#resetButton').attr('disabled', false);
+                        $("#resetBtnSpinner").hide();
+                    },
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
