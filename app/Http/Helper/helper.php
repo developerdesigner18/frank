@@ -188,6 +188,7 @@ function getVisitCounts($user_id = ""): array
 {
     return [
         'available' => Visit::where('status', 'OPEN')
+            ->whereNull('visitor_id') // Exclude visits already assigned to someone
             ->when($user_id, function($q) use ($user_id) {
                 // Visitor: Exclude visits where this user has expressed interest
                 $q->whereDoesntHave('interests', function($subQuery) use ($user_id) {

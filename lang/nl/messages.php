@@ -168,6 +168,7 @@ return [
     'end' => 'Einde',
     'no_visits_found' => 'Geen bezoeken gevonden!',
     'welcome_aboard' => 'Welkom aan boord kapitein!',
+    'company_scores'=>'Bedrijf scoort',
 
     // Additional Visit Page Keys
     'open' => 'Open',
@@ -481,7 +482,7 @@ return [
     'placeholder_description' => 'Bezoekbeschrijving',
     'placeholder_view_visit' => 'Knoplabel (standaard: Bezoek bekijken)',
     'questionnaire_not_available' => 'Vragenlijst is niet beschikbaar',
-    
+
     // Subdealers
     'subdealers' => 'Subdealers',
     'subdealer' => 'Subdealer',
@@ -504,7 +505,7 @@ return [
     'name_asc' => 'Naam (A-Z)',
     'name_desc' => 'Naam (Z-A)',
     'no_cancel' => 'Nee, annuleren',
-    
+
     // Beheerders Beheer
     'admin_users' => 'Beheerders',
     'add_admin_user' => 'Beheerder toevoegen',
@@ -515,7 +516,7 @@ return [
     'admin_deleted_successfully' => 'Beheerder succesvol verwijderd!',
     'cannot_delete_yourself' => 'U kunt uw eigen account niet verwijderen!',
     'leave_blank_to_keep_current' => 'Laat leeg om huidig wachtwoord te behouden',
-    
+
     // Onvolledige Categorieën Zijbalk
     'incomplete_categories' => 'Onvolledige Categorieën',
     'categories_need_attention' => ':count :word :plural aandacht nodig',

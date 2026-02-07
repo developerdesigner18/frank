@@ -168,6 +168,7 @@ return [
     'end' => 'End',
     'no_visits_found' => 'No Visits Found!',
     'welcome_aboard' => 'Welcome aboard captain!',
+    'company_scores'=>'Company scores',
 
     // Additional Visit Page Keys
     'open' => 'Open',
@@ -487,7 +488,7 @@ return [
     'placeholder_description' => 'Visit description',
     'placeholder_view_visit' => 'Button label (default: View Visit)',
     'questionnaire_not_available' => 'Questionnaire is not available',
-    
+
     // Subdealers
     'subdealers' => 'Subdealers',
     'subdealer' => 'Subdealer',
@@ -510,7 +511,7 @@ return [
     'name_asc' => 'Name (A-Z)',
     'name_desc' => 'Name (Z-A)',
     'no_cancel' => 'No, cancel',
-    
+
     // Admin Users Management
     'admin_users' => 'Admin Users',
     'add_admin_user' => 'Add Admin User',
@@ -521,7 +522,7 @@ return [
     'admin_deleted_successfully' => 'Admin user deleted successfully!',
     'cannot_delete_yourself' => 'You cannot delete your own account!',
     'leave_blank_to_keep_current' => 'Leave blank to keep current password',
-    
+
     // Incomplete Categories Sidebar
     'incomplete_categories' => 'Incomplete Categories',
     'categories_need_attention' => ':count :word need:plural attention',
