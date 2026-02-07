@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Route;
 require __DIR__ . '/common.php';
 
 Route::group(['middleware' => 'guest:admin'], function () {
-    
+
     Route::controller(AuthController::class)->group(function () {
         Route::get('/login', 'login')->name('login');
         Route::post('/login-action', 'loginAction')->name('login-action');
@@ -60,7 +60,7 @@ Route::group(['middleware' => 'auth:admin'], function () {
     Route::controller(DashboardController::class)->group(function () {
         Route::get('/', 'index')->name('dashboard');
     });
-    
+
     // Admin Users Management
     Route::controller(\App\Http\Controllers\Admin\AdminUserController::class)->name('admin-users.')->prefix('admin-users')->group(function () {
         Route::get('/', 'index')->name('index');
@@ -70,7 +70,7 @@ Route::group(['middleware' => 'auth:admin'], function () {
         Route::post('/update', 'update')->name('update');
         Route::post('/delete', 'delete')->name('delete');
     });
-    
+
     Route::controller(\App\Http\Controllers\Admin\SubdealerController::class)->name('subdealer.')->prefix('subdealer')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/list', 'list')->name('list');

@@ -70,7 +70,9 @@ class Company extends Model
             $model->company_id = (string) \Illuminate\Support\Str::uuid();
         });
 
-        
+        static::deleting(function ($company) {
+            $company->branches()->delete();
+        });
     }
     public function subdealer()
     {
