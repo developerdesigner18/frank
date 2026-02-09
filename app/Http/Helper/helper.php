@@ -312,3 +312,35 @@ function calculateReimbursementAmount($responseData)
         return 0.00;
     }
 }
+
+/**
+ * Format a single date based on locale
+ */
+function format_visit_date($date, $format = 'd F Y', $locale = null)
+{
+    if (empty($date)) return 'N/A';
+    $locale = $locale ?: app()->getLocale();
+    return Carbon::parse($date)->locale($locale)->translatedFormat($format);
+}
+
+/**
+ * Format a date range based on locale and specific requirements
+ */
+function format_visit_date_range($start, $end, $locale = null)
+{
+    if (empty($start) || empty($end)) return 'N/A';
+    
+    $locale = $locale ?: app()->getLocale();
+    $startDate = Carbon::parse($start)->locale($locale);
+    $endDate = Carbon::parse($end)->locale($locale);
+    
+    $separator = ' en '; // User explicitly requested 'en' as separator for both languages
+    
+    if ($locale === 'nl') {
+        // Dutch: 13 februari en 17 februari 2026
+        return $startDate->translatedFormat('d F') . $separator . $endDate->translatedFormat('d F Y');
+    } else {
+        // English: 13 February 2026 en 17 February 2026
+        return $startDate->translatedFormat('d F Y') . $separator . $endDate->translatedFormat('d F Y');
+    }
+}

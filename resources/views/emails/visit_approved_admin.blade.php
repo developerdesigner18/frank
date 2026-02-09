@@ -11,7 +11,7 @@ A visit request was approved. Here are the details:
     | Visit ID     | #{{ $visit->id }} |
     | Visitor      | {{ $visit->visitor->name ?? $visit->visitor->name ?? 'N/A' }} |
     | Branch       | {{ $visit->branch->branch_name ?? 'N/A' }} |
-    | Date & Time  | {{ \Carbon\Carbon::parse($visit->visit_date)->locale('nl')->translatedFormat('l, d F Y H:i') ?? 'N/A' }} |
+    | Date & Time  | {{ $visit_date ?? 'N/A' }} |
     | Status       | **Approved** |
     | Approved By  | {{ $visit->approved_by_name ?? 'System' }} |
     | Notes        | {{ $visit->admin_notes ?? '-' }} |

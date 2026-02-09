@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\EmailTemplate;
 use App\Models\Visit;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -62,7 +63,18 @@ $this->visitor_name=$visitor_name;
         // Fallback to a default view (you can create this later if needed)
         return new Content(
             markdown: 'emails.new-visit',
+            with: $this->bladeContext()
         );
+    }
+
+    protected function bladeContext(): array
+    {
+        $ctx = [];
+        foreach ($this->context() as $key => $value) {
+            $cleanKey = str_replace(['{{', '}}'], '', $key);
+            $ctx[$cleanKey] = $value;
+        }
+        return $ctx;
     }
 
     /**
@@ -92,6 +104,7 @@ $this->visitor_name=$visitor_name;
      */
     protected function context(): array
     {
+        $locale = app()->getLocale();
         $expenseEstimation = currency_icon() . $this->visit->expense_estimation_min . ' - ' .
                            currency_icon() . $this->visit->expense_estimation_max;
 
@@ -106,8 +119,9 @@ $this->visitor_name=$visitor_name;
             '{{branch_zipcode}}' => $this->visit->branch->postal_code ?? 'N/A',
             '{{company_name}}' => $this->visit->branch->company->company_name ?? 'N/A',
             '{{questionnaire_name}}' => $this->visit->questionnaire->name ?? 'N/A',
-            '{{start_datetime}}' => \Carbon\Carbon::parse($this->visit->start_datetime)->format('d F Y') ?? 'N/A',
-            '{{end_datetime}}' => \Carbon\Carbon::parse($this->visit->end_datetime)->format('d F Y') ?? 'N/A',
+            '{{start_datetime}}' => format_visit_date($this->visit->start_datetime, 'd F', $locale),
+            '{{end_datetime}}' => format_visit_date($this->visit->end_datetime, 'd F Y', $locale),
+            '{{visit_period}}' => format_visit_date_range($this->visit->start_datetime, $this->visit->end_datetime, $locale),
             '{{price}}' => currency_icon() . $this->visit->price,
             '{{expense_estimation}}' => $expenseEstimation,
             '{{description}}' => $this->visit->description ?? 'No description provided.',

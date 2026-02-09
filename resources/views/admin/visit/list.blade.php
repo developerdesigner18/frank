@@ -237,9 +237,9 @@
                     </div>
                 </div>
             @endif
-            @if($row->status->name == 'PENDING')
+            @if($row->status->name == 'PENDING' && $row->report)
                 <div class="flex flex-col md:flex-row items-center justify-end gap-4 mt-3">
-                    <a href="{{ route('admin.visit.report.review',$row->report->report_uid) }}"
+                    <a href="{{ route('admin.visit.report.review',$row->report?->report_uid) }}"
                        class="flex items-center justify-center space-x-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-[#0073AF] hover:bg-[#0068A0] cursor-pointer text-white text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200">
                         <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor"
                              viewBox="0 0 24 24">
@@ -268,7 +268,7 @@
 {{--                    </div>--}}
                 </div>
             @endif
-            @if($row->status->name == 'COMPLETED')
+            @if($row->status->name == 'COMPLETED'&& $row->report)
                 <div class="flex flex-col md:flex-row items-center justify-end gap-4 mt-3">
                     <a href="{{ route('admin.visit.generate.pdf',$row->id) }}" target="_blank"
                        class="flex items-center justify-center space-x-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-red-600 hover:bg-red-700 cursor-pointer text-white text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200">
@@ -277,7 +277,7 @@
                         </svg>
                         <span>{{ trans_message('download_report') }}</span>
                     </a>
-                    <a href="{{ route('admin.visit.submissions',$row->report->report_uid) }}"
+                    <a href="{{ route('admin.visit.submissions',$row->report?->report_uid) }}"
                        class="flex items-center justify-center space-x-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-[#0073AF] hover:bg-[#0068A0] cursor-pointer text-white text-xs sm:text-sm font-medium rounded-lg transition-colors duration-200">
                         <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor"
                              viewBox="0 0 24 24">

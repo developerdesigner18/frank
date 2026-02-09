@@ -116,30 +116,36 @@ class VisitApprovedMail extends Mailable
      */
     protected function context(): array
     {
-        $context = [
+        $locale = ($this->recipientType === 'admin') ? 'nl' : app()->getLocale();
+        $expenseEstimation = currency_icon() . $this->visit->expense_estimation_min . ' - ' .
+            currency_icon() . $this->visit->expense_estimation_max;
+        return [
             '{{visit_id}}' => $this->visit->id,
-            '{{visitor_name}}' => $this->visit->visitor->name ?? 'Visitor',
+
+            '{{visitor_name}}' =>trim($this->visit->visitor->first_name ?? ''),
+//                trim(($this->visit->visitor->first_name ?? '') . ' ' . ($this->visit->visitor->last_name ?? '')),
+
             '{{visitor_email}}' => $this->visit->visitor->email ?? '',
             '{{visitor_phone}}' => $this->visit->visitor->mobile_number ?? '',
+
             '{{company_name}}' => $this->visit->branch->company->company_name ?? '',
             '{{branch_name}}' => $this->visit->branch->branch_name ?? '',
-            '{{visit_date}}' => \Carbon\Carbon::parse($this->visit->visit_date)->format('l, d F Y H:i') ?? 'N/A',
+            '{{branch_address}}' => $this->visit->branch->address_1 ?? '',
+            '{{branch_zipcode}}' => $this->visit->branch->postal_code ?? '',
+            '{{branch_place}}' => $this->visit->branch->locality ?? '',
+
+            '{{start_datetime}}' => format_visit_date($this->visit->start_datetime, 'd F', $locale),
+            '{{end_datetime}}' => format_visit_date($this->visit->end_datetime, 'd F Y', $locale),
+            '{{visit_date}}' => format_visit_date_range($this->visit->start_datetime, $this->visit->end_datetime, $locale),
+
+            '{{price}}' => $this->visit->price ?? '',
+            '{{expense_estimation}}' => $expenseEstimation,
+
+            '{{description}}' => $this->visit->description ?? '',
+
             '{{status}}' => 'Approved',
             '{{approved_by}}' => $this->visit->approved_by_name ?? 'Admin',
+            '{{approver_name}}' => $this->visit->approved_by_name ?? 'Admin',
             '{{notes}}' => $this->visit->admin_notes ?? '-',
         ];
-
-        // Add recipient-specific context
-        if ($this->recipientType === 'admin') {
-            $context['{{recipient_type}}'] = 'Admin';
-            $context['{{notification_message}}'] = "A visit has been approved";
-            $context['{{cta_label}}'] = "Open Visit";
-        } else {
-            $context['{{recipient_type}}'] = 'Visitor';
-            $context['{{notification_message}}'] = "Your visit has been approved";
-            $context['{{cta_label}}'] = "Open Visit";
-        }
-
-        return $context;
-    }
-}
+    }}

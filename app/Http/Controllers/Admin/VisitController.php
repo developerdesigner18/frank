@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Mail\NewVisitMail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -53,6 +54,7 @@ class VisitController extends Controller
             if($page=='available'){
                 // Show OPEN visits with NO interests
                 $query->where('status','=','OPEN')
+                    ->where('visitor_id','=',null)
                     ->whereDoesntHave('interests');
             }elseif ($page=='interested'){
                 // Show visits with ANY interests AND status is OPEN or INTERESTED
@@ -854,7 +856,7 @@ class VisitController extends Controller
 
         // 2. Fallback: Generate, Save to DB, then View
         $pdfPath = $this->actuallyGenerateAndSavePDF($visit_id);
-        
+
         return response()->file($pdfPath, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $displayName . '"'
@@ -883,7 +885,7 @@ class VisitController extends Controller
 
         // 2. Fallback: Generate, Save to DB, then Download
         $pdfPath = $this->actuallyGenerateAndSavePDF($visit_id);
-        
+
         return response()->download($pdfPath, $displayName);
     }
 
@@ -893,7 +895,7 @@ class VisitController extends Controller
     private function actuallyGenerateAndSavePDF($visit_id)
     {
         $visitData = VisitReport::where(['visit_id' => $visit_id])->first();
-        
+
         ini_set('memory_limit', '1024M');
         set_time_limit(300);
 
@@ -902,7 +904,7 @@ class VisitController extends Controller
         }else{
             $response_data = (array) json_decode($visitData->response_data);
         }
-        
+
         $qVisitIds = $visitData->visit->questionnaire->visits()->whereIn('status', ['PENDING', 'COMPLETED', 'APPROVED'])->pluck('id')->toArray();
         $currentYear = Carbon::now()->year;
         $visitReports = VisitReport::whereIn('visit_id', $qVisitIds)->whereYear('created_at', $currentYear)->get();
@@ -914,7 +916,7 @@ class VisitController extends Controller
         });
 
         $newArr = [];
-        
+
         $period = Carbon::parse($minDate)->startOfMonth()->monthsUntil(Carbon::parse($maxDate)->endOfMonth());
         $rangeMonths = [];
         foreach ($period as $date) { $rangeMonths[] = $date->format('M'); }
@@ -983,7 +985,7 @@ class VisitController extends Controller
         $date = date('d-m-Y');
         $fileName = 'Mystery Visit ' . $branch_name . ' ' . $date . ' ' . time() . '.pdf';
         $filePath = public_path(VISIT_PDF_PATH) . $fileName;
-        
+
         // Delete old file if exists
         if ($visitData->report_pdf_url && file_exists(public_path($visitData->report_pdf_url))) {
             @unlink(public_path($visitData->report_pdf_url));
@@ -1079,6 +1081,7 @@ class VisitController extends Controller
 
     public function assignVisitor(Request $request)
     {
+//        dd('dd');
         try {
             $validator = Validator::make($request->all(), [
                 'visit_id' => 'required|exists:visits,id',
@@ -1110,6 +1113,7 @@ class VisitController extends Controller
                 ->delete();
 
             $visit = Visit::with(['visitor', 'branch.company', 'questionnaire'])->find($request->visit_id);
+            $visit->approved_by_name = trim((Auth::user()->first_name ?? '') . ' ' . (Auth::user()->last_name ?? ''));
             $pdfPath = null;
 
             if ($visit->visitor && $visit->visitor->email) {

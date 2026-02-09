@@ -44,6 +44,7 @@ return [
     'change_password' => 'Wachtwoord wijzigen',
     'new_password' => 'Nieuw wachtwoord',
     'confirm_password' => 'Bevestig nieuw wachtwoord',
+    'password'=> 'wachtwoord',
     'save_changes' => 'Wijzigingen opslaan',
     'modify' => 'Aanpassen',
     'edit_faq' => 'FAQ bewerken',

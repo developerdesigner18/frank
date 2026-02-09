@@ -44,6 +44,7 @@ return [
     'change_password' => 'Change Password',
     'new_password' => 'New Password',
     'confirm_password' => 'Confirm New Password',
+    'password'=> 'Password',
     'save_changes' => 'Save Changes',
     'modify' => 'Modify',
     'edit_faq' => 'Edit Frequently Asked Questions',

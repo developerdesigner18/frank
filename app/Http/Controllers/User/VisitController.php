@@ -64,11 +64,11 @@ class VisitController extends Controller
                     $subQuery->where('user_id', $this->user_id);
                 })->where(function ($q) {
                     $q->where('status', VisitStatus::OPEN->value)
-                      ->orWhere('status', VisitStatus::INTERESTED->value);
+                        ->orWhere('status', VisitStatus::INTERESTED->value);
                 })->where(function ($q) {
                     // Only show if visit is unassigned OR assigned to this user
                     $q->whereNull('visitor_id')
-                      ->orWhere('visitor_id', $this->user_id);
+                        ->orWhere('visitor_id', $this->user_id);
                 });
             }elseif ($page=='scheduled'){
                 $query->where(function($query) {
@@ -113,9 +113,9 @@ class VisitController extends Controller
                     $q->whereHas('branch', function ($sub) use ($search) {
                         $sub->where('branch_name', 'like', "%{$search}%");
                     })
-                    ->orWhereHas('questionnaire', function ($sub) use ($search) {
-                        $sub->where('name', 'like', "%{$search}%");
-                    });
+                        ->orWhereHas('questionnaire', function ($sub) use ($search) {
+                            $sub->where('name', 'like', "%{$search}%");
+                        });
                 });
             }
 
@@ -224,16 +224,16 @@ class VisitController extends Controller
         }
 
         $questionnaire = $visit->questionnaire;
-    if(!$questionnaire){
-        return redirect()->back()->with('error','Questionnaire not found or deleted.');
-    }
-    $payload = json_decode($questionnaire->payload,true);
+        if(!$questionnaire){
+            return redirect()->back()->with('error','Questionnaire not found or deleted.');
+        }
+        $payload = json_decode($questionnaire->payload,true);
 
-    if(!$payload || !isset($payload['categories'])){
-        return redirect()->back()->with('error','Questionnaire data is invalid or corrupted.');
-    }
+        if(!$payload || !isset($payload['categories'])){
+            return redirect()->back()->with('error','Questionnaire data is invalid or corrupted.');
+        }
 
-    Visit::find($visit_id)->update(['status'=>'IN_PROGRESS']);
+        Visit::find($visit_id)->update(['status'=>'IN_PROGRESS']);
 
         return view('user.visit.survey',compact('visit','questionnaire', 'payload', 'visit_report_data', 'old_questions'));
     }
@@ -475,136 +475,136 @@ class VisitController extends Controller
     }
 
     public function generatePDF(String $visit_id)
-{
-    $visitData = VisitReport::where(['visit_id' => $visit_id])->first();
+    {
+        $visitData = VisitReport::where(['visit_id' => $visit_id])->first();
 
-    // Check if visit report exists
-    if (!$visitData) {
-        abort(404, 'Visit report not found. Please ensure the visit has been completed and submitted.');
-    }
+        // Check if visit report exists
+        if (!$visitData) {
+            abort(404, 'Visit report not found. Please ensure the visit has been completed and submitted.');
+        }
 
-    // ✅ Check if PDF already exists in storage (reuse stored PDF)
-    if ($visitData->report_pdf_url && file_exists(public_path($visitData->report_pdf_url))) {
-        // Serve the pre-generated PDF directly - NO REGENERATION!
-        return response()->file(public_path($visitData->report_pdf_url), [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="visit-'.$visit_id.'.pdf"'
-        ]);
-    }
+        // ✅ Check if PDF already exists in storage (reuse stored PDF)
+        if ($visitData->report_pdf_url && file_exists(public_path($visitData->report_pdf_url))) {
+            // Serve the pre-generated PDF directly - NO REGENERATION!
+            return response()->file(public_path($visitData->report_pdf_url), [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="visit-'.$visit_id.'.pdf"'
+            ]);
+        }
 
-    // If PDF doesn't exist yet, generate it on-the-fly (fallback)
-    ini_set('memory_limit', '512M');
-    set_time_limit(300);
+        // If PDF doesn't exist yet, generate it on-the-fly (fallback)
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
 
-    if(gettype($visitData->response_data)=='array'){
-        $response_data = $visitData->response_data;
-    }else{
-        $response_data = (array) json_decode($visitData->response_data);
-    }
-    $qVisitIds = $visitData->visit->questionnaire
-        ->visits()
-        ->whereIn('status', ['PENDING', 'COMPLETED'])
-        ->pluck('id')
-        ->toArray();
+        if(gettype($visitData->response_data)=='array'){
+            $response_data = $visitData->response_data;
+        }else{
+            $response_data = (array) json_decode($visitData->response_data);
+        }
+        $qVisitIds = $visitData->visit->questionnaire
+            ->visits()
+            ->whereIn('status', ['PENDING', 'COMPLETED'])
+            ->pluck('id')
+            ->toArray();
 
-    $currentYear = Carbon::now()->year;
-    $visitReports = VisitReport::whereIn('visit_id', $qVisitIds)->whereYear('created_at', $currentYear)->get();
+        $currentYear = Carbon::now()->year;
+        $visitReports = VisitReport::whereIn('visit_id', $qVisitIds)->whereYear('created_at', $currentYear)->get();
 
-    $minDate = $visitReports->min('created_at');
-    $maxDate = $visitReports->max('created_at');
+        $minDate = $visitReports->min('created_at');
+        $maxDate = $visitReports->max('created_at');
 
-    $period = Carbon::parse($minDate)->startOfMonth()->monthsUntil(Carbon::parse($maxDate)->endOfMonth());
+        $period = Carbon::parse($minDate)->startOfMonth()->monthsUntil(Carbon::parse($maxDate)->endOfMonth());
 
-    $rangeMonths = [];
-    foreach ($period as $date) {
-        $rangeMonths[] = $date->format('M');
-    }
+        $rangeMonths = [];
+        foreach ($period as $date) {
+            $rangeMonths[] = $date->format('M');
+        }
 
-    $groupedVisitReports = $visitReports->groupBy(function ($item) {
-        return Carbon::parse($item->created_at)->format('M');
-    });
+        $groupedVisitReports = $visitReports->groupBy(function ($item) {
+            return Carbon::parse($item->created_at)->format('M');
+        });
 
-    $newArr = [];
-    if($minDate->month != $maxDate->month){
-        foreach ($response_data['category'] as $catKey => $catName) {
-            $result = [];
+        $newArr = [];
+        if($minDate->month != $maxDate->month){
+            foreach ($response_data['category'] as $catKey => $catName) {
+                $result = [];
 
-            foreach ($rangeMonths as $month) {
-                $scores = 0;
-                $max_scores = 0;
+                foreach ($rangeMonths as $month) {
+                    $scores = 0;
+                    $max_scores = 0;
 
-                if (isset($groupedVisitReports[$month])) {
-                    foreach ($groupedVisitReports[$month] as $report) {
-                        $json = is_array($report->response_data)
-                            ? $report->response_data
-                            : json_decode($report->response_data, true);
+                    if (isset($groupedVisitReports[$month])) {
+                        foreach ($groupedVisitReports[$month] as $report) {
+                            $json = is_array($report->response_data)
+                                ? $report->response_data
+                                : json_decode($report->response_data, true);
 
-                        if (isset($json['category'][$catKey])) {
-                            $scores += $json['score_result'][$catKey] ?? 0;
-                            $max_scores += $json['max_score_result'][$catKey] ?? 0;
+                            if (isset($json['category'][$catKey])) {
+                                $scores += $json['score_result'][$catKey] ?? 0;
+                                $max_scores += $json['max_score_result'][$catKey] ?? 0;
+                            }
                         }
                     }
+                    $final_score = ($scores>0)? round(($scores / $max_scores)*100,2) :0;
+
+                    $result[$month] = $final_score;
                 }
-                $final_score = ($scores>0)? round(($scores / $max_scores)*100,2) :0;
 
-                $result[$month] = $final_score;
+                $months = array_keys($result);
+                $scores = $result;
+
+                $newArr[$catName] = ['month'=>$months, 'score'=>$scores];
             }
-
-            $months = array_keys($result);
-            $scores = $result;
-
-            $newArr[$catName] = ['month'=>$months, 'score'=>$scores];
         }
-    }
 
-    $subdealer = $visitData->visit->branch->company->subdealer ?? null;
-    $main_logo = public_path('assets/logo/bar_logo.png');
+        $subdealer = $visitData->visit->branch->company->subdealer ?? null;
+        $main_logo = public_path('assets/logo/bar_logo.png');
 
-    if ($subdealer && $subdealer->getRawOriginal('logo')) {
-        $logoPath = public_path(SUBDEALER_LOGO_PATH . $subdealer->getRawOriginal('logo'));
-        if (file_exists($logoPath)) {
-            $main_logo = $logoPath;
+        if ($subdealer && $subdealer->getRawOriginal('logo')) {
+            $logoPath = public_path(SUBDEALER_LOGO_PATH . $subdealer->getRawOriginal('logo'));
+            if (file_exists($logoPath)) {
+                $main_logo = $logoPath;
+            }
         }
+
+        $data = [
+            'title' => $response_data['title']??'Mystery Visit Thuishaven',
+            'main_logo' => $main_logo,
+            'bar_logo' => public_path('assets/logo/Bitmap.png'),
+            'visitData' => $visitData,
+            'response_data' => $response_data,
+            'chart_data' => $newArr,
+        ];
+
+        $pdf = PDF::loadView('admin.visit.reportPDF', $data);
+        $pdf->output();
+        $dompdf = $pdf->getDomPDF();
+        $canvas = $dompdf->getCanvas();
+
+        $footer_company = "MysteryVisits.nl";
+        $footer_phone = "tel: 024 234 28 13";
+        $footer_email = "welkom@mysteryvisits.nl";
+
+        if ($subdealer) {
+            if ($subdealer->name) $footer_company = $subdealer->name;
+            if ($subdealer->phone) $footer_phone = "tel: " . $subdealer->phone;
+            if ($subdealer->email) $footer_email = $subdealer->email;
+        }
+
+        $branch_name = $visitData->visit->branch->branch_name??'';
+        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($branch_name, $footer_company, $footer_phone, $footer_email) {
+            $font = $fontMetrics->get_font("helvetica", "normal");
+            $size = 9;
+
+            $canvas->text(25, 815, $footer_company, $font, $size);
+            $canvas->text(160, 815, $footer_phone, $font, $size);
+            $canvas->text(278, 815, $footer_email, $font, $size);
+            $canvas->text(425, 815, "$branch_name", $font, $size);
+            $canvas->text(555, 815, "$pageNumber", $font, $size);
+        });
+
+        return $pdf->stream('visit-'.$visit_id.'.pdf');
     }
-
-    $data = [
-        'title' => $response_data['title']??'Mystery Visit Thuishaven',
-        'main_logo' => $main_logo,
-        'bar_logo' => public_path('assets/logo/Bitmap.png'),
-        'visitData' => $visitData,
-        'response_data' => $response_data,
-        'chart_data' => $newArr,
-    ];
-
-    $pdf = PDF::loadView('admin.visit.reportPDF', $data);
-    $pdf->output();
-    $dompdf = $pdf->getDomPDF();
-    $canvas = $dompdf->getCanvas();
-
-    $footer_company = "MysteryVisits.nl";
-    $footer_phone = "tel: 024 234 28 13";
-    $footer_email = "welkom@mysteryvisits.nl";
-
-    if ($subdealer) {
-        if ($subdealer->name) $footer_company = $subdealer->name;
-        if ($subdealer->phone) $footer_phone = "tel: " . $subdealer->phone;
-        if ($subdealer->email) $footer_email = $subdealer->email;
-    }
-
-    $branch_name = $visitData->visit->branch->branch_name??'';
-    $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($branch_name, $footer_company, $footer_phone, $footer_email) {
-        $font = $fontMetrics->get_font("helvetica", "normal");
-        $size = 9;
-
-        $canvas->text(25, 815, $footer_company, $font, $size);
-        $canvas->text(160, 815, $footer_phone, $font, $size);
-        $canvas->text(278, 815, $footer_email, $font, $size);
-        $canvas->text(425, 815, "$branch_name", $font, $size);
-        $canvas->text(555, 815, "$pageNumber", $font, $size);
-    });
-
-    return $pdf->stream('visit-'.$visit_id.'.pdf');
-}
 
     /**
      * Handle user expressing interest in a visit
